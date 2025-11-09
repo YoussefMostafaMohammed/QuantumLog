@@ -1,0 +1,3 @@
+/home/youssef/modernC++/QuantumLog/Phase_01/build/CMakeFiles/QuantumLog.dir
+/home/youssef/modernC++/QuantumLog/Phase_01/build/CMakeFiles/edit_cache.dir
+/home/youssef/modernC++/QuantumLog/Phase_01/build/CMakeFiles/rebuild_cache.dir
