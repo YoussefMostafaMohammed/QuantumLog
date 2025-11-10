@@ -2,16 +2,11 @@
 
 ## Introduction
 
-This comprehensive guide walks you through setting up **Jenkins** (an open-source automation server) to automatically build, test, and run code from a GitHub repository upon every push, leveraging **Docker** for containerized builds. Jenkins excels in continuous integration/continuous deployment (CI/CD) pipelines by orchestrating tasks like code checkout, building, testing, and deployment. Docker, a platform for developing, shipping, and running applications in containers, ensures consistent environments across development and production.
+This comprehensive guide walks you through setting up **Jenkins** (an open-source automation server) to automatically build, test, and run code from a GitHub repository upon every push, leveraging **Docker** for containerized builds.
 
-We'll delve deeply into **how everything works, integrates, and flows**, helping you learn and study the underlying mechanics. For instance:
 - **Flow Overview**: GitHub push → Webhook notification → Jenkins receives trigger via exposed endpoint (e.g., ngrok) → Pipeline execution on Jenkins node → Git checkout → Docker build/run → Post-actions (success/failure handling).
+
 - **Integrations**: Jenkins integrates with GitHub via webhooks and SCM plugins; Docker via CLI commands (or emulations like Podman); Plugins extend Jenkins for pipelines.
-- **Why This Setup?** It automates workflows, reduces manual errors, and isolates builds in containers for reproducibility.
-
-This guide covers end-to-end installation, configuration, a full pipeline example, and detailed troubleshooting—especially the errors you encountered (e.g., user namespace issues and sd-bus permission denied in Podman-emulated Docker). We'll explain **what causes these errors**, **how components interact to produce them**, and **step-by-step solutions** with flows for learning.
-
-Tested on **Ubuntu 22.04 LTS** (as of November 10, 2025). Assumes basic Linux knowledge; we'll explain concepts deeply.
 
 We will cover:
 1. Installing Jenkins standalone (mechanics of service setup and initial unlock).
@@ -36,8 +31,6 @@ Jenkins runs as a Java-based service, listening on port 8080 by default. The ins
     sudo apt install -y openjdk-11-jdk wget gnupg2
    ```
 
-   - Why? Java runtime (JDK) powers Jenkins; gnupg2 handles secure key imports.
-
 2. **Add Jenkins Repository and Key**:
    - Flow: Download key → Add to apt keyring → Create repo list → Update indexes.
    ```bash
@@ -50,7 +43,7 @@ Jenkins runs as a Java-based service, listening on port 8080 by default. The ins
    ```bash
    sudo apt install -y jenkins
    ```
-   - Post-Install Flow: Apt installs binaries, configs (/etc/default/jenkins), and starts the service via systemd.
+    - Post-Install Flow: Apt installs binaries, configs (/etc/default/jenkins), and starts the service via systemd.
 
 4. **Start and Enable Jenkins**:
    ```bash
