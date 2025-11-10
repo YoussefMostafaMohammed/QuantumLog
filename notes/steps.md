@@ -125,12 +125,6 @@ sudo usermod -aG docker jenkins
 
 > **Important:** Log out and log back in (or restart your PC) to apply group changes.
 
-9. Test Docker:
-
-```bash
-docker run hello-world
-```
-
 ---
 
 ## Step 3: Install Jenkins Pipeline Plugin
@@ -148,9 +142,9 @@ docker run hello-world
 1. Download ngrok:
 
 ```bash
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-unzip ngrok-stable-linux-amd64.zip
-sudo mv ngrok /usr/local/bin
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+tar -xvzf ngrok-v3-stable-linux-amd64.tgz
+sudo mv ngrok /usr/local/bin/
 ```
 
 2. Start ngrok to expose Jenkins:
@@ -159,7 +153,65 @@ sudo mv ngrok /usr/local/bin
 ngrok http 8080
 ```
 
+- this will give you an error i follow 
+    `https://dashboard.ngrok.com/get-started/your-authtoken`
+    `it will ask you to run this command `
+    ```bash
+        # write your $YOUR_AUTHTOKEN instead
+        ngrok config add-authtoken $YOUR_AUTHTOKEN
+    ```
+
 3. Copy the public URL provided by ngrok. Use it in GitHub webhook.
+
+#### full steps example for Github webhook
+
+For example, if your local server (e.g., a webhook listener) runs on **port 8080**:
+
+```bash
+ngrok http 8080
+```
+
+You’ll see something like:
+
+```bash
+Forwarding                    https://sooty-rocky-glozingly.ngrok-free.dev -> http://localhost:8080
+```
+
+---
+
+### ** Copy the public URL**
+The **public URL** is the one before `->`.  
+From the example above:
+
+```
+https://sooty-rocky-glozingly.ngrok-free.dev
+```
+
+This is the URL GitHub can reach over the internet.
+
+---
+
+### ** Set up the GitHub webhook**
+1. Go to your **GitHub repository** → **Settings → Webhooks → Add webhook**.  
+2. **Payload URL:** Paste the public URL from ngrok, e.g.:  
+
+```bash
+    https://sooty-rocky-glozingly.ngrok-free.dev/webhook
+```
+*(append the endpoint your server expects, e.g., `/webhook`)*  
+3. **Content type:** `application/json`  
+4. **Events:** Choose `Just the push event` or any events you want.  
+5. Click **Add webhook**.
+
+---
+
+### ** Verify**
+- GitHub will send a test POST request to your local server via the ngrok tunnel.  
+- Your server logs should show the webhook payload arriving.
+
+---
+
+**Tip:** If you restart ngrok, it will generate a **new URL**, so you’ll need to update the webhook URL in GitHub unless you have a **paid ngrok plan with a reserved domain**.
 
 ---
 
