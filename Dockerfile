@@ -15,9 +15,8 @@ ENV IN_DOCKER=1
 
 # Copy project files into container
 COPY . .
-# Before running cmake
 
-# Create build directory
+# Create build directory and remove the previous build
 
 RUN rm -rf build && mkdir -p build
 
