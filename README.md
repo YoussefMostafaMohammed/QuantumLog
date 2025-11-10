@@ -30,3 +30,4 @@
 ### Bonus
 * Implement `<<` operator for `LogMessage` that returns a fully-formatted string that is ready for printing. **Hint: look up `std::ostream`.** 
 
+
