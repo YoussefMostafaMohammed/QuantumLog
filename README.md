@@ -1,15 +1,16 @@
 # QuantumLog: A Telemetry & Logging System
 
-> QuantumLog is a scalable, multithreaded telemetry and logging system written in Modern C++17; designed with best architectural and implementation practices in mind.  
-> It leverages both the power of Modern C++ and industry-standard libraries such as vSOMEIP and DLT to provide robust, high-performance logging and trace capabilities.
+QuantumLog is a scalable, multithreaded telemetry and logging system written in modern C++17. It can be built using **Docker** or **CMake** and supports **continuous integration** through **Jenkins**. Designed with best practices in both architecture and implementation, QuantumLog leverages the power of modern C++ along with industry-standard libraries like **vSOMEIP** and **DLT** to deliver robust, high-performance logging and tracing capabilities.
 
 ---
 
 ## Features
-- Support for multiple sources of data: through a file, a socket, or Ethernet/Wi-Fi via vSOMEIP.
-- Intuitive data formatting.
-- Ability to display or store logs into multiple sinks: on the console, in a file, or exported to an AUTOSAR-compliant DLT Viewer.
+- Supports multiple data sources: files, sockets, or Ethernet/Wi-Fi via vSOMEIP.
+- Provides intuitive data formatting.
+- Can display or store logs to multiple sinks: console, file, or AUTOSAR-compliant DLT Viewer.
 - Thread-safe architecture designed for scalability and real-time telemetry.
+- Build through Docker.
+- Continuous integration using Jenkins.
 
 ---
 
@@ -49,5 +50,3 @@
 - Decorator  
 - Adapter  
 - Facade  
-
-    
