@@ -1,0 +1,190 @@
+# =========================
+# OS / SYSTEM FILES
+# =========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# =========================
+# IDEs / EDITORS
+# =========================
+# JetBrains (CLion, IntelliJ, PyCharm, Android Studio, etc.)
+.idea/
+*.iml
+out/
+
+# VSCode
+.vscode/
+.history/
+*.code-workspace
+
+# Eclipse
+.project
+.classpath
+.csettings
+.settings/
+
+# =========================
+# BUILD / BINARIES / OBJECTS
+# =========================
+# C / C++ / Make / CMake
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+*.o
+*.obj
+*.so
+*.a
+*.dll
+*.lib
+*.exe
+*.out
+
+# Debug / Release folders
+Debug/
+Release/
+x64/
+x86/
+bin/
+obj/
+dist/
+
+# =========================
+# COMPILER / TOOL OUTPUT
+# =========================
+*.log
+*.dSYM/
+*.gcda
+*.gcno
+*.gcov
+*.elf
+*.map
+*.lst
+
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+.eggs/
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+
+# =========================
+# JAVA / GRADLE / MAVEN
+# =========================
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+.gradle/
+build/
+target/
+out/
+!.gradle-wrapper.jar
+
+# =========================
+# ANDROID / KOTLIN / JAVA
+# =========================
+.gradle/
+local.properties
+/.idea/caches/
+/.idea/libraries/
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+captures/
+output.json
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+*.keystore
+*.jks
+
+# =========================
+# NODE / WEB PROJECTS
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnp/
+.pnp.js
+
+# =========================
+# ENVIRONMENT / SECURITY
+# =========================
+.env
+.env.*
+*.key
+*.pem
+*.crt
+*.cer
+*.p12
+
+# =========================
+# ARCHIVES / TEMP FILES
+# =========================
+*.zip
+*.tar
+*.gz
+*.7z
+*.rar
+*.bak
+*.tmp
+*.swp
+*.swo
+*.old
+
+# =========================
+# MISC
+# =========================
+*.sqlite3
+*.db
+*.lock
+*.pid
+*.seed
+*.pid.lock
+
+# =========================
+# LOGS
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
