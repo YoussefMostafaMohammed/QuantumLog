@@ -20,3 +20,4 @@ else()
         PRIVATE -fsanitize=address
     )
 endif()
+
