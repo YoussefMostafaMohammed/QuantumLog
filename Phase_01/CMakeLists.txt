@@ -16,6 +16,7 @@ target_compile_options(QuantumLog
     PRIVATE -g -fsanitize=address -fno-omit-frame-pointer -O0 -std=c++17 -fdump-lang-class
 )
 
+
 target_link_options(QuantumLog
     PRIVATE -fsanitize=address
 )
