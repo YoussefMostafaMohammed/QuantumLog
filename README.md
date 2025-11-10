@@ -49,3 +49,5 @@
 - Decorator  
 - Adapter  
 - Facade  
+
+    
