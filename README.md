@@ -49,4 +49,3 @@
 - Decorator  
 - Adapter  
 - Facade  
-
