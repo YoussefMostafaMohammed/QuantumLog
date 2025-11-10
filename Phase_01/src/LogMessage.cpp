@@ -1,15 +1,15 @@
 #include "LogMessage.hpp"
 
-std::string LogMessage::getMessage()const{
-        return message;
+std::string LogMessage::getText()const{
+        return text;
 }
 
-void LogMessage::setMessage(std::string message){
-        this->message=message;
+void LogMessage::setText(std::string text){
+        this->text=text;
 }
 
 
 std::ostream& operator <<(std::ostream& out, const LogMessage& msg){
-    out<<msg.message;
+    out<<msg.text;
     return out;
 }

@@ -13,7 +13,7 @@ int FileSinkImpl::write(LogMessage logMessage){
     if (!file) {
         return 1;
     }
-    file << logMessage.getMessage() << std::endl;
+    file << logMessage << std::endl;
     file.close();
     return 0;
 }

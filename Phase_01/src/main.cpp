@@ -16,13 +16,13 @@ int main(void){
     LogMessage logMessage6=LogMessage();
     LogMessage logMessage7=LogMessage();
 
-    logMessage1.setMessage("Hello ");
-    logMessage2.setMessage("My ");
-    logMessage3.setMessage("Name ");
-    logMessage4.setMessage("Is ");
-    logMessage5.setMessage("Youssef ");
-    logMessage6.setMessage("Mostafa ");
-    logMessage7.setMessage("Mohammed \n");
+    logMessage1.setText("Hello ");
+    logMessage2.setText("My ");
+    logMessage3.setText("Name ");
+    logMessage4.setText("Is ");
+    logMessage5.setText("Youssef ");
+    logMessage6.setText("Mostafa ");
+    logMessage7.setText("Mohammed \n");
     
     LogManger logManger=LogManger();
     
