@@ -1,1 +1,0 @@
-/usr/bin/g++ -g -fsanitize=address CMakeFiles/QuantumLog.dir/src/ConsoleSinkImpl.cpp.o CMakeFiles/QuantumLog.dir/src/FileSinkImpl.cpp.o CMakeFiles/QuantumLog.dir/src/LogManger.cpp.o CMakeFiles/QuantumLog.dir/src/LogMessage.cpp.o CMakeFiles/QuantumLog.dir/src/main.cpp.o -o QuantumLog 

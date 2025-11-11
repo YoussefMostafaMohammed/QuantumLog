@@ -1,0 +1,7 @@
+[requires]
+spdlog/1.11.0
+fmt/10.0.0
+
+[generators]
+CMakeToolchain
+CMakeDeps
