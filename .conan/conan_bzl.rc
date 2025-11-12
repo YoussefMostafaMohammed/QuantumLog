@@ -1,0 +1,10 @@
+# Automatic bazelrc file created by Conan
+
+
+build:conan-config --cxxopt=-std=gnu++17
+
+
+build:conan-config --dynamic_mode=off
+build:conan-config --compilation_mode=opt
+
+

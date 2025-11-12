@@ -1,0 +1,57 @@
+# Components precompiled libs
+
+# Root package precompiled libs
+
+# Components libraries declaration
+cc_library(
+    name = "spdlog-libspdlog",
+    hdrs = glob([
+        "include/**",
+    ],
+    allow_empty = True
+    ),
+    includes = [
+        "include",
+    ],
+    defines = [
+        "SPDLOG_FMT_EXTERNAL",
+    ],
+    linkopts = [
+        "-lpthread",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort
+        "@fmt//:fmt",
+    ],
+)
+
+# Package library declaration
+cc_library(
+    name = "spdlog",
+    hdrs = glob([
+        "include/**",
+    ],
+    allow_empty = True
+    ),
+    includes = [
+        "include",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort
+        ":spdlog-libspdlog",
+        "@fmt//:fmt",
+    ],
+)
+
+# Filegroup library declaration
+filegroup(
+    name = "spdlog_binaries",
+    srcs = glob([
+        "bin/**",
+    ],
+    allow_empty = True
+    ),
+    visibility = ["//visibility:public"],
+)

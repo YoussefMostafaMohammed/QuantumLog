@@ -1,0 +1,7 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+filegroup(
+    name = "log_headers",
+    srcs = glob(["*.hpp"]),
+    visibility = ["//visibility:public"],  # so other targets can depend on it
+)
