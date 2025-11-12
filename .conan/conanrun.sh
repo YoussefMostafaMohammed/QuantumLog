@@ -1,1 +1,0 @@
-. "/home/youssef/modernC++/QuantumLog/.conan/conanrunenv-release-x86_64.sh"
