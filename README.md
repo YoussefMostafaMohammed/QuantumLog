@@ -84,10 +84,29 @@ QuantumLog/
 
 ## Build Instructions
 
-### 1️⃣ CMake Alone
+first install these System Dependencies
 
 ```bash
-mkdir -p build && cd build
+sudo apt-get update
+sudo apt-get install -y \
+    build-essential \       # gcc, g++, make
+    cmake \                 # CMake build system
+    git \                   # git
+    python3-pip \           # for pip, Conan (if needed)
+    curl \                  # download scripts
+    unzip \                 # unzip archives
+    zip \                   # zip files
+    libspdlog-dev \         # spdlog headers + libs
+    libfmt-dev \            # fmt headers + libs
+    openjdk-11-jdk \        # required by Bazel
+    pkg-config \            # CMake helper to find libraries
+    ninja-build \           # optional, faster CMake builds
+```
+
+### 1️ CMake Alone
+
+```bash
+rm -rf build && mkdir -p build && cd build
 cmake ..
 cmake --build . -- -j$(nproc)
 ./QuantumLog
@@ -95,23 +114,87 @@ cmake --build . -- -j$(nproc)
 
 ---
 
-### 2️⃣ CMake with Conan
+### 2️ CMake with Conan
 
 ```bash
-# Install dependencies via Conan
-conan install .. --build=missing -of build
-
-# Configure with CMake using Conan toolchain
-cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
-
-# Build and run
-cmake --build build -- -j$(nproc)
-./build/QuantumLog
+rm -rf build && mkdir build
+USE_BAZEL=false conan install . --output-folder=.conan --build=missing
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=.conan/conan_toolchain.cmake
+cmake --build build -- -j$(nproc) && ./build/QuantumLog
 ```
 
 ---
+ 
+### 3️ Bazel with conan
 
-### 3️⃣ Bazel Alone
+> just run 
+```bash
+bazel build //src:main
+bazel run //src:main
+```
+
+    `befor running the commands make sure that src/BUILD.bazel and MODULE.bazel doesn't changed`
+
+### 3️ Bazel Alone without conan
+
+
+> just run
+
+```bash
+sed -i '/load_conan_dependencies/d' MODULE.bazel
+sed -i '/use_repo/d' MODULE.bazel
+sed -i '/fmt/d' src/BUILD.bazel
+sed -i '/spdlog/d' src/BUILD.bazel
+bazel build //src:main
+bazel run //src:main
+```
+
+ `or do it manually `
+
+> from module .bazel remove these lines
+
+```MODULE.bazel
+load_conan_dependencies = use_extension("//.conan:conan_deps_module_extension.bzl", "conan_extension")
+use_repo(load_conan_dependencies, "fmt", "spdlog")
+```
+
+> then the new MODULE.bazel will be 
+
+```MODULE.bazel
+module(name = "quantum_log", version = "1.0.0")
+bazel_dep(name = "rules_cc", version = "0.2.14")
+```
+
+> and from src/BUILD.bazel remove 
+
+```src/BUILD.bazel
+"@fmt//:fmt",
+"@spdlog//:spdlog",
+```
+
+> the new src/BUILD.bazel will be 
+
+```src/BUILD.bazel
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_binary")
+
+cc_library(
+    name = "log_lib",
+    srcs = ["ConsoleSinkImpl.cpp", "FileSinkImpl.cpp", "LogManager.cpp", "LogMessage.cpp"],
+    hdrs = ["//inc:log_headers"],
+    includes = ["../inc"],
+    deps = [
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "main",
+    srcs = ["main.cpp"],
+    deps = [":log_lib"],
+)
+```
+
+> then build and run
 
 ```bash
 bazel build //src:main
@@ -124,14 +207,14 @@ bazel run //src:main
 
 All Docker-based builds use **the same Dockerfile**. You can switch between CMake or Bazel and optionally include Conan by passing build arguments: `BUILD_SYSTEM` and `USE_CONAN`.
 
-### 4️⃣ Docker with CMake Alone
+### 4️ Docker with CMake Alone
 
-```bash
-docker build --build-arg BUILD_SYSTEM=cmake --build-arg USE_CONAN=false -t quantumlog-docker-cmake .
-docker run --rm quantumlog-docker-cmake
+    ```bash
+    docker build --build-arg BUILD_SYSTEM=cmake --build-arg USE_CONAN=false -t quantumlog-docker-cmake .
+    docker run --rm quantumlog-docker-cmake
 ```
 
-### 5️⃣ Docker with CMake + Conan
+### 5️ Docker with CMake + Conan
 
 ```bash
 docker build --build-arg BUILD_SYSTEM=cmake --build-arg USE_CONAN=true -t quantumlog-docker-conan-cmake .
@@ -145,7 +228,7 @@ docker build --build-arg BUILD_SYSTEM=bazel --build-arg USE_CONAN=false -t quant
 docker run --rm quantumlog-docker-bazel
 ```
 
-### 7️⃣ Docker with Bazel + Conan
+### 7️ Docker with Bazel + Conan
 
 ```bash
 docker build --build-arg BUILD_SYSTEM=bazel --build-arg USE_CONAN=true -t quantumlog-docker-conan-bazel .

@@ -1,7 +1,7 @@
 # Use a lightweight Linux image with build tools
 FROM ubuntu:22.04
 
-# Install dependencies + Conan + Bazel prerequisites
+# Install dependencies + Conan + Bazel prerequisites + system deps for no-Conan
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -9,8 +9,11 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     curl \
     unzip \
+    libspdlog-dev \
+    libfmt-dev \
     zip \
     openjdk-11-jdk \
+    && pip3 install --upgrade pip \
     && pip3 install conan \
     && rm -rf /var/lib/apt/lists/*
 
@@ -22,7 +25,13 @@ RUN curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > /usr/
 
 # Set working directory
 WORKDIR /app
+
+# Build args: choose build system and Conan usage
 ENV IN_DOCKER=1
+ARG BUILD_SYSTEM=cmake          # Options: cmake, bazel
+ARG USE_CONAN=true              # Options: true, false
+ENV BUILD_SYSTEM=${BUILD_SYSTEM}
+ENV USE_CONAN=${USE_CONAN}
 
 # Copy project files into container
 COPY . .
@@ -33,17 +42,23 @@ RUN rm -rf build && mkdir -p build
 # Detect default Conan profile
 RUN conan profile detect
 
-# Build args: choose build system and Conan usage
-ARG BUILD_SYSTEM=bazel          # Options: cmake, bazel
-ARG USE_CONAN=true             # Options: true, false
-
-ENV BUILD_SYSTEM=${BUILD_SYSTEM}
-ENV USE_CONAN=${USE_CONAN}
-
-# Install dependencies if USE_CONAN=true
+# Install dependencies if USE_CONAN=true and generate build system files
 RUN if [ "$USE_CONAN" = "true" ]; then \
-        conan install . --output-folder=.conan --build=missing; \
+        if [ "$BUILD_SYSTEM" = "cmake" ]; then \
+            conan install . --output-folder=.conan --build=missing -g CMakeToolchain -g CMakeDeps; \
+        elif [ "$BUILD_SYSTEM" = "bazel" ]; then \
+            conan install . --output-folder=.conan --build=missing -g BazelDeps -g BazelToolchain; \
+        else \
+            echo "Unknown BUILD_SYSTEM=$BUILD_SYSTEM"; exit 1; \
+        fi \
+    else \
+        sed -i '/load_conan_dependencies/d' MODULE.bazel; \
+        sed -i '/use_repo/d' MODULE.bazel; \
+        sed -i '/fmt/d' src/BUILD.bazel; \
+        sed -i '/spdlog/d' src/BUILD.bazel; \
+        echo "Patched BUILD files for no-Conan mode"; \
     fi
+
 
 # Build logic based on build system
 RUN if [ "$BUILD_SYSTEM" = "cmake" ]; then \
@@ -57,7 +72,7 @@ RUN if [ "$BUILD_SYSTEM" = "cmake" ]; then \
         if [ "$USE_CONAN" = "true" ]; then \
             bazel --bazelrc=.conan/conan_bzl.rc build --config=conan-config //src:main; \
         else \
-            bazel build //src:main; \
+            bazel build //src:main --check_direct_dependencies=off; \
         fi; \
     else \
         echo "Unknown BUILD_SYSTEM=$BUILD_SYSTEM"; exit 1; \

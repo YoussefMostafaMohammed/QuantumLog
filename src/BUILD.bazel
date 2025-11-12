@@ -2,7 +2,7 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_binary")
 
 cc_library(
     name = "log_lib",
-    srcs = ["ConsoleSinkImpl.cpp", "FileSinkImpl.cpp", "LogManger.cpp", "LogMessage.cpp"],
+    srcs = ["ConsoleSinkImpl.cpp", "FileSinkImpl.cpp", "LogManager.cpp", "LogMessage.cpp"],
     hdrs = ["//inc:log_headers"],
     includes = ["../inc"],
     deps = [
@@ -11,7 +11,6 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
-
 
 cc_binary(
     name = "main",

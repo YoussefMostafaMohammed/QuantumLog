@@ -1,6 +1,6 @@
 #include <iostream>
 #include "LogMessage.hpp"
-#include "LogManger.hpp"
+#include "LogManager.hpp"
 #include "FileSinkImpl.hpp"
 #include "ConsoleSinkImpl.hpp"
 
@@ -24,7 +24,7 @@ int main(void){
     logMessage6.setText("Mostafa ");
     logMessage7.setText("Mohammed \n");
     
-    LogManger logManger=LogManger();
+    LogManager logManger=LogManager();
     
     logManger.addSink(&fileSinkImpl);
     logManger.addSink(&consoleSinkImpl);

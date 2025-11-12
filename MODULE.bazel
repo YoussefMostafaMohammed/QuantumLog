@@ -1,10 +1,4 @@
-module(name = "quantum_log", version = "1.0.0")
-
-# Bazel C/C++ rules
-bazel_dep(name = "rules_cc", version = "0.0.9")  # <- add this line
-
-# Load Conan's Bzlmod extension (path to your .conan/)
+    module(name = "quantum_log", version = "1.0.0")
+    bazel_dep(name = "rules_cc", version = "0.2.14")
 load_conan_dependencies = use_extension("//.conan:conan_deps_module_extension.bzl", "conan_extension")
-
-# Import specific deps (creates @fmt, @spdlog repos)
 use_repo(load_conan_dependencies, "fmt", "spdlog")

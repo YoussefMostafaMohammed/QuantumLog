@@ -1,14 +1,14 @@
-#include "LogManger.hpp"
+#include "LogManager.hpp"
 
-void LogManger::addSink(ILogSink *logSink){
+void LogManager::addSink(ILogSink *logSink){
     sinks.push_back(logSink);
 }
 
-void LogManger::addMessage(LogMessage logMessage){
+void LogManager::addMessage(LogMessage logMessage){
     messages.push_back(logMessage);
 }
 
-void LogManger::routeMessages(){
+void LogManager::routeMessages(){
     for(auto sink:sinks){
         for(auto message:messages){
             sink->write(message);

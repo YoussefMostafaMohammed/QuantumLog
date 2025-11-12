@@ -4,7 +4,7 @@
 #include "ILogSink.hpp"
 #include "LogMessage.hpp"
 
-class LogManger{
+class LogManager{
     private:
         std::vector<ILogSink*>sinks;
         std::vector<LogMessage>messages;
