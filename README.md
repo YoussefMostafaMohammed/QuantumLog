@@ -1,33 +1,162 @@
+Got it! Here's a fully rewritten README that **matches your single Dockerfile setup** and clearly explains all build scenarios with Docker build args:
+
+---
+
 # Phase One: Core Synchronous Logging Foundation
 
-## Goals
-1. Create a concrete skeleton for the project upon which everything will be built upon.
-1. Provide a minimalist version of the overall functionality of the final product; following the practices of Agile Methodology.
+## Overview
 
-## Requirements
+This project implements the foundational skeleton for a C++ logging system. It provides a minimalist prototype, allowing logs to be routed to multiple sinks while adhering to best C++ practices. The architecture is designed to be extendable, containerized, and reproducible across different build environments.
+
+---
+
+## Objectives
+
 1. Define the structure of a log message.
-1. Create a simple class that manages/takes logs and routes them to different sinks.
-1. Create log sinks that store/display logs.
+2. Implement a `LogManager` to manage and route log messages.
+3. Create concrete log sinks (`ConsoleSinkImpl`, `FileSinkImpl`) that output logs to different targets.
+4. Support multiple build systems (CMake, Bazel) and dependency management (Conan).
+5. Containerize the project using Docker.
 
-## Topic
-### C++
-* `virtual`, `default`, `friend`, `public`, `protected`, `private` keywords.
-* Classes, interfaces, and inheritance (public, protected, private, virtual).
-* Virtual tables (virtual functions & virtual destructors).
-* Operator overloading.
-* Namespaces.
-* Name Mangling
+---
 
-### Design Patterns
-* Strategy Design Pattern.
+## C++ Concepts Covered
+
+* `virtual`, `default`, `friend`, `public`, `protected`, `private` keywords
+* Classes, interfaces, inheritance, and polymorphism
+* Virtual tables (virtual functions and destructors)
+* Operator overloading (`<<`)
+* Namespaces and name mangling
+
+---
+
+## Design Patterns
+
+* **Strategy Design Pattern** – decouples log routing logic from log sinks.
+
+---
 
 ## Deliverables
-### Main
-* `ILogSink` &rarr; contains a pure virtual function for `write` capability and a defaulted virtual destructor.
-* `LogMessage` &rarr; contains fields for app name, context, time, severity, text.
-* `LogManager` &rarr; a class that for now stores `LogMessage` objects into a private buffer and has a method that routes the messages into all sinks.
-* `ConsoleSinkImpl` & `FileSinkImpl` &rarr; both implement the interface and override the `write` functionality as suited for each sink.
+
+### Core Components
+
+* **`ILogSink`** – Pure virtual interface with `write()` method and defaulted virtual destructor.
+* **`LogMessage`** – Contains fields: app name, context, timestamp, severity, and text.
+* **`LogManager`** – Manages log messages and routes them to all sinks.
+* **`ConsoleSinkImpl`** & **`FileSinkImpl`** – Implement `ILogSink` to output to console and file.
+
 ### Bonus
-* Implement `<<` operator for `LogMessage` that returns a fully-formatted string that is ready for printing. **Hint: look up `std::ostream`.** 
 
+* Overload the `<<` operator for `LogMessage` for fully formatted string output (`std::ostream`).
 
+---
+
+## Project Structure
+
+```
+QuantumLog/
+├── CMakeLists.txt
+├── conanfile.py
+├── Dockerfile
+├── inc/
+│   ├── BUILD.bazel
+│   ├── *.hpp
+├── MODULE.bazel
+├── MODULE.bazel.lock
+├── notes/
+├── src/
+│   ├── BUILD.bazel
+│   ├── *.cpp
+└── README.md
+```
+
+---
+
+## Features
+
+* Fully implemented core synchronous logging system
+* Dockerized for reproducibility
+* Conan for dependency management (spdlog, fmt)
+* Supports both Bazel and CMake builds
+* Ready for Continuous Integration (CI/CD)
+
+---
+
+## Build Instructions
+
+### 1️⃣ CMake Alone
+
+```bash
+mkdir -p build && cd build
+cmake ..
+cmake --build . -- -j$(nproc)
+./QuantumLog
+```
+
+---
+
+### 2️⃣ CMake with Conan
+
+```bash
+# Install dependencies via Conan
+conan install .. --build=missing -of build
+
+# Configure with CMake using Conan toolchain
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+
+# Build and run
+cmake --build build -- -j$(nproc)
+./build/QuantumLog
+```
+
+---
+
+### 3️⃣ Bazel Alone
+
+```bash
+bazel build //src:main
+bazel run //src:main
+```
+
+---
+
+## Docker Builds (Single Dockerfile)
+
+All Docker-based builds use **the same Dockerfile**. You can switch between CMake or Bazel and optionally include Conan by passing build arguments: `BUILD_SYSTEM` and `USE_CONAN`.
+
+### 4️⃣ Docker with CMake Alone
+
+```bash
+docker build --build-arg BUILD_SYSTEM=cmake --build-arg USE_CONAN=false -t quantumlog-docker-cmake .
+docker run --rm quantumlog-docker-cmake
+```
+
+### 5️⃣ Docker with CMake + Conan
+
+```bash
+docker build --build-arg BUILD_SYSTEM=cmake --build-arg USE_CONAN=true -t quantumlog-docker-conan-cmake .
+docker run --rm quantumlog-docker-conan-cmake
+```
+
+### 6️⃣ Docker with Bazel Alone
+
+```bash
+docker build --build-arg BUILD_SYSTEM=bazel --build-arg USE_CONAN=false -t quantumlog-docker-bazel .
+docker run --rm quantumlog-docker-bazel
+```
+
+### 7️⃣ Docker with Bazel + Conan
+
+```bash
+docker build --build-arg BUILD_SYSTEM=bazel --build-arg USE_CONAN=true -t quantumlog-docker-conan-bazel .
+docker run --rm quantumlog-docker-conan-bazel
+```
+
+---
+
+## Summary
+
+* You can build **natively** with CMake or Bazel.
+* You can optionally include **Conan for dependencies**.
+* You can optionally use **Docker for reproducible environments**.
+* **Single Dockerfile** handles all scenarios via build arguments (`BUILD_SYSTEM` and `USE_CONAN`).

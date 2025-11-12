@@ -20,6 +20,7 @@ RUN curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > /usr/
        | tee /etc/apt/sources.list.d/bazel.list \
     && apt-get update && apt-get install -y bazel
 
+# Set working directory
 WORKDIR /app
 ENV IN_DOCKER=1
 
@@ -32,19 +33,35 @@ RUN rm -rf build && mkdir -p build
 # Detect default Conan profile
 RUN conan profile detect
 
-# *********************** using CMake (commented, optional) ***********************
-# Install Conan dependencies into build folder
-# RUN conan install . -of build --build=missing   
+# Build args: choose build system and Conan usage
+ARG BUILD_SYSTEM=bazel          # Options: cmake, bazel
+ARG USE_CONAN=true             # Options: true, false
 
-# Configure project using CMake
-# RUN cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug
+ENV BUILD_SYSTEM=${BUILD_SYSTEM}
+ENV USE_CONAN=${USE_CONAN}
 
-# Build the project using CMake
-# RUN cmake --build build -- -j$(nproc)
+# Install dependencies if USE_CONAN=true
+RUN if [ "$USE_CONAN" = "true" ]; then \
+        conan install . --output-folder=.conan --build=missing; \
+    fi
 
-# *********************** using Bazel *************************
-RUN conan install . --output-folder=.conan --build=missing
-RUN bazel --bazelrc=.conan/conan_bzl.rc build --config=conan-config //src:main
+# Build logic based on build system
+RUN if [ "$BUILD_SYSTEM" = "cmake" ]; then \
+        if [ "$USE_CONAN" = "true" ]; then \
+            cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=.conan/conan_toolchain.cmake; \
+        else \
+            cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug; \
+        fi && \
+        cmake --build build -- -j$(nproc); \
+    elif [ "$BUILD_SYSTEM" = "bazel" ]; then \
+        if [ "$USE_CONAN" = "true" ]; then \
+            bazel --bazelrc=.conan/conan_bzl.rc build --config=conan-config //src:main; \
+        else \
+            bazel build //src:main; \
+        fi; \
+    else \
+        echo "Unknown BUILD_SYSTEM=$BUILD_SYSTEM"; exit 1; \
+    fi
 
-# Default command to run the executable built by Bazel
-CMD ["./bazel-bin/src/main"]
+# Default command
+CMD ["sh", "-c", "if [ \"$BUILD_SYSTEM\" = \"cmake\" ]; then ./build/QuantumLog; else ./bazel-bin/src/main; fi"]
