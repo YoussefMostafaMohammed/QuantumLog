@@ -129,6 +129,7 @@ cmake --build build -- -j$(nproc) && ./build/QuantumLog
 
 > just run 
 ```bash
+conan install . --output-folder=.conan --build=missing -g BazelDeps -g BazelToolchain;
 bazel build //src:main
 bazel run //src:main
 ```
