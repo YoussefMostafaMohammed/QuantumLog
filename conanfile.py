@@ -1,4 +1,4 @@
-from conan import ConanFile
+from conan import ConanFile # type: ignore
 import os
 
 class QuantumLogConan(ConanFile):
