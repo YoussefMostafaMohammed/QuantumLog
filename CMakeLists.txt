@@ -1,29 +1,35 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 project(QuantumLog VERSION 1.0 LANGUAGES CXX)
 
-# Include Conan-generated toolchain if it exists
+# -------------------------------
+# Compiler and C++ standard
+# -------------------------------
+set(CMAKE_CXX_COMPILER /opt/gcc-15.2/bin/g++)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Enable GCC experimental modules
+add_compile_options(-fmodules-ts)
+
+# -------------------------------
+# Project sources
+# -------------------------------
+file(GLOB SOURCES "src/*.cpp")
+add_executable(QuantumLog ${SOURCES})
+
+target_include_directories(QuantumLog PRIVATE inc)
+
+# -------------------------------
+# Conan libraries
+# -------------------------------
 if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
     include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 endif()
 
-# Set compiler manually if needed
-set(TOOLCHAIN_PREFIX "/usr/bin/g++")
-set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX})
-
-# Gather all source files
-file(GLOB SOURCES "src/*.cpp")
-add_executable(QuantumLog ${SOURCES})
-
-# Include headers
-target_include_directories(QuantumLog PRIVATE inc)
-
-# Link dependencies provided by Conan
-# Conan generates targets spdlog::spdlog_header_only and fmt::fmt
 if(TARGET spdlog::spdlog_header_only AND TARGET fmt::fmt)
-    message(STATUS "Linking spdlog and fmt using Conan targets")
     target_link_libraries(QuantumLog PRIVATE spdlog::spdlog_header_only fmt::fmt)
 else()
-    message(STATUS "spdlog or fmt targets not found via Conan, fallback to find_package")
     find_package(spdlog QUIET)
     find_package(fmt QUIET)
     if(TARGET spdlog::spdlog_header_only AND TARGET fmt::fmt)
@@ -35,15 +41,10 @@ else()
     endif()
 endif()
 
-# AddressSanitizer flags (skip inside Docker)
-if(DEFINED ENV{IN_DOCKER} AND NOT "$ENV{IN_DOCKER}" STREQUAL "")
-    message(STATUS "Building inside Docker, skipping AddressSanitizer flags")
-else()
-    message(STATUS "Adding AddressSanitizer flags")
-    target_compile_options(QuantumLog
-        PRIVATE -g -fsanitize=address -fno-omit-frame-pointer -O0 -std=c++17
-    )
-    target_link_options(QuantumLog
-        PRIVATE -fsanitize=address
-    )
+# -------------------------------
+# AddressSanitizer (skip Docker)
+# -------------------------------
+if(NOT DEFINED ENV{IN_DOCKER} OR "$ENV{IN_DOCKER}" STREQUAL "")
+    target_compile_options(QuantumLog PRIVATE -g -fsanitize=address -fno-omit-frame-pointer -O0)
+    target_link_options(QuantumLog PRIVATE -fsanitize=address)
 endif()
