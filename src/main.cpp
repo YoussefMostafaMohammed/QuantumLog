@@ -5,8 +5,8 @@
 #include "ConsoleSinkImpl.hpp"
 
 int main(void){
-    FileSinkImpl fileSinkImpl;
-    ConsoleSinkImpl consoleSinkImpl;
+    std::unique_ptr<ILogSink> consoleSinkImpl=std::make_unique<ConsoleSinkImpl>();
+    std::unique_ptr<ILogSink> fileSinkImpl=std::make_unique<FileSinkImpl>();
 
     LogMessage logMessage1=LogMessage();
     LogMessage logMessage2=LogMessage();
@@ -25,9 +25,8 @@ int main(void){
     logMessage7.setText("Mohammed \n");
     
     LogManager logManger=LogManager();
-    
-    logManger.addSink(&fileSinkImpl);
-    logManger.addSink(&consoleSinkImpl);
+    logManger.addSink(std::move(fileSinkImpl));
+    logManger.addSink(std::move(consoleSinkImpl));
     
     logManger.addMessage(logMessage1);
     logManger.addMessage(logMessage2);

@@ -1,16 +1,17 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <memory>   
 #include "ILogSink.hpp"
 #include "LogMessage.hpp"
 
 class LogManager{
     private:
-        std::vector<ILogSink*>sinks;
+        std::vector<std::unique_ptr<ILogSink>> sinks;
         std::vector<LogMessage>messages;
     public:
 
-    void addSink(ILogSink *logSink);
+    void addSink(std::unique_ptr<ILogSink> logSink);
 
     void addMessage(LogMessage logMessage);
 
