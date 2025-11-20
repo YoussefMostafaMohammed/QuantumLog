@@ -15,7 +15,6 @@ public:
     void setPath(std::string path);
     
     void setFileName(std::string fileName);
-
-
+    
     int write(LogMessage logMessage) override;
 };
