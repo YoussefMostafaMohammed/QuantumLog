@@ -18,7 +18,6 @@ public:
     std::string getText() const;
     void setText(std::string text);
 
-
     std::string getContext() const;
     void setContext(std::string context);
     

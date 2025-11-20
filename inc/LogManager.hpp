@@ -17,3 +17,21 @@ class LogManager{
 
     void routeMessages(void);
 };
+
+
+class LogManagerBuilder{
+    private:
+        std::unique_ptr<LogManager> logManger;
+    public:
+        
+        LogManagerBuilder();
+        
+        LogManagerBuilder& addSink(std::unique_ptr<ILogSink> logSink);
+    
+        LogManagerBuilder& addMessage(LogMessage logMessage);
+    
+        std::unique_ptr<LogManager> build();
+    
+};
+
+
