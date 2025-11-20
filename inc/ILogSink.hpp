@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <memory>   
 #include "LogMessage.hpp"
 
 class ILogSink{
