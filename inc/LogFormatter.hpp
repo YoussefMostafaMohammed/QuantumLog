@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "MyTypes.hpp"
+#include "LogMessage.hpp"
 
 template<typename T>
 class LogFormatter {

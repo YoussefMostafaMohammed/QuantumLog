@@ -8,6 +8,7 @@ cc_library(
     deps = [
         "@fmt//:fmt",
         "@spdlog//:spdlog",
+        ":magic_enum",
     ],
     visibility = ["//visibility:public"],
 )

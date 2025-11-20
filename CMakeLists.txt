@@ -45,6 +45,7 @@ target_include_directories(${PROJECT_NAME}
 # Dependencies
 # ============================================================
 # Prefer Conan targets, fallback to system find_package
+
 if(TARGET spdlog::spdlog_header_only AND TARGET fmt::fmt)
     message(STATUS "Linking spdlog and fmt (Conan targets found)")
     target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog_header_only fmt::fmt)
@@ -99,3 +100,5 @@ message(STATUS "Source Directory  : ${PROJECT_SOURCE_DIR}")
 message(STATUS "Binary Directory  : ${PROJECT_BINARY_DIR}")
 message(STATUS "=====================================================")
 message(STATUS "")
+
+
