@@ -9,33 +9,37 @@
 #include "LogFormatter.hpp"
 #include "ConsoleSinkImpl.hpp"
 #include "LogSinkFactory.hpp"
+#include "LogManagerBuilder.hpp"
 
 int main(void){
-    LogSinkFactory logSinkFactory;
     
-    std::unique_ptr<ILogSink> consoleSinkImpl=logSinkFactory.createLogSink(::Enums::LogSinkType_enum::CONSOLE);
-    std::unique_ptr<ILogSink> fileSinkImpl=logSinkFactory.createLogSink(::Enums::LogSinkType_enum::FILE);
+    std::unique_ptr<LogSinkFactory>  logSinkFactory=std::make_unique<LogSinkFactory>();
+    
+    std::unique_ptr<ILogSink> consoleSinkImpl=logSinkFactory->createLogSink(::Enums::LogSinkType::CONSOLE);
+    std::unique_ptr<ILogSink> fileSinkImpl=logSinkFactory->createLogSink(::Enums::LogSinkType::FILE);
 
     LogFormatter<Polices::CPU> cpuFormater;
     LogFormatter<Polices::GPU> gpuFormater;
     LogFormatter<Polices::RAM> ramFormater;
     
-    LogManager logManger=LogManager();
+    LogManagerBuilder logManagerBuilder=LogManagerBuilder();
 
     LogMessage logMessage;
     for(float i =0.0f;i<100.0f;i+=2.24f){
         logMessage=cpuFormater.format(std::to_string(i));
-        logManger.addMessage(logMessage);
+        logManagerBuilder.addMessage(logMessage);
         logMessage=gpuFormater.format(std::to_string(i+1.4f));
-        logManger.addMessage(logMessage);
+        logManagerBuilder.addMessage(logMessage);
         logMessage=ramFormater.format(std::to_string(i+3.2f));
-        logManger.addMessage(logMessage);
+        logManagerBuilder.addMessage(logMessage);
     }
 
-    logManger.addSink(std::move(fileSinkImpl));
-    logManger.addSink(std::move(consoleSinkImpl));
+    logManagerBuilder.addSink(std::move(fileSinkImpl));
+    logManagerBuilder.addSink(std::move(consoleSinkImpl));
     
-    logManger.routeMessages();
+    std::unique_ptr<LogManager>  logManager=logManagerBuilder.build();
+
+    logManager->routeMessages();
 
     return 0;
 }

@@ -4,19 +4,19 @@
 
 namespace Enums{
 
-    enum class LogSinkType_enum : unsigned char {
+    enum class LogSinkType : unsigned char {
         CONSOLE,
         FILE,
         SOCKET
     };
 
-    enum class SeverityLvl_enum : unsigned char {
+    enum class SeverityLvl : unsigned char {
         CRITICAL,
         WARNING,
         INFO
     };
 
-    enum class TelemetrySrc_enum : unsigned char{
+    enum class TelemetrySrc : unsigned char{
         CPU,
         GPU,
         RAM
@@ -27,32 +27,32 @@ namespace Enums{
 namespace Polices{
 
     struct CPU{
-        static constexpr ::Enums::TelemetrySrc_enum context=::Enums::TelemetrySrc_enum::CPU;
+        static constexpr ::Enums::TelemetrySrc context=::Enums::TelemetrySrc::CPU;
         static constexpr std::string_view unit = "%";
         static constexpr float WARNING=75.0f;
         static constexpr float CRITICAL=90.0f;
-        static constexpr ::Enums::SeverityLvl_enum inferSeverity(float val) noexcept {
-            return (val >= CRITICAL)? ::Enums::SeverityLvl_enum::CRITICAL:(val >= WARNING)?::Enums::SeverityLvl_enum::WARNING: ::Enums::SeverityLvl_enum::INFO;
+        static constexpr ::Enums::SeverityLvl inferSeverity(float val) noexcept {
+            return (val >= CRITICAL)? ::Enums::SeverityLvl::CRITICAL:(val >= WARNING)?::Enums::SeverityLvl::WARNING: ::Enums::SeverityLvl::INFO;
         }
     };
     
     struct GPU{
-        static constexpr ::Enums::TelemetrySrc_enum context=::Enums::TelemetrySrc_enum::GPU;
+        static constexpr ::Enums::TelemetrySrc context=::Enums::TelemetrySrc::GPU;
         static constexpr ::std::string_view unit = "%";
         static constexpr float WARNING=75.0f;
         static constexpr float CRITICAL=90.0f;
-        static constexpr ::Enums::SeverityLvl_enum inferSeverity(float val) noexcept {
-            return (val >= CRITICAL)? ::Enums::SeverityLvl_enum::CRITICAL:(val >= WARNING)?::Enums::SeverityLvl_enum::WARNING: ::Enums::SeverityLvl_enum::INFO;
+        static constexpr ::Enums::SeverityLvl inferSeverity(float val) noexcept {
+            return (val >= CRITICAL)? ::Enums::SeverityLvl::CRITICAL:(val >= WARNING)?::Enums::SeverityLvl::WARNING: ::Enums::SeverityLvl::INFO;
         }
     };
 
     struct RAM{
-        static constexpr ::Enums::TelemetrySrc_enum context=::Enums::TelemetrySrc_enum::RAM;
+        static constexpr ::Enums::TelemetrySrc context=::Enums::TelemetrySrc::RAM;
         static constexpr ::std::string_view unit = "MB";
         static constexpr float WARNING=75.0f;
         static constexpr float CRITICAL=90.0f;
-        static constexpr ::Enums::SeverityLvl_enum inferSeverity(float val) noexcept {
-            return (val >= CRITICAL)? ::Enums::SeverityLvl_enum::CRITICAL:(val >= WARNING)?::Enums::SeverityLvl_enum::WARNING: ::Enums::SeverityLvl_enum::INFO;
+        static constexpr ::Enums::SeverityLvl inferSeverity(float val) noexcept {
+            return (val >= CRITICAL)? ::Enums::SeverityLvl::CRITICAL:(val >= WARNING)?::Enums::SeverityLvl::WARNING: ::Enums::SeverityLvl::INFO;
         }
     };
 }

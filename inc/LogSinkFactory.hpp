@@ -7,6 +7,6 @@
 
 class LogSinkFactory{
     public:
-        static std::unique_ptr<ILogSink> createLogSink(::Enums::LogSinkType_enum logSinkType);
+        static std::unique_ptr<ILogSink> createLogSink(::Enums::LogSinkType logSinkType);
         virtual ~LogSinkFactory() = default;
 };
