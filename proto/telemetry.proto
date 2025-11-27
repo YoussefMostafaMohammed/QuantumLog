@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package telemetry;
+
+// Mirror your C++ enums exactly (same names, same order)
+enum TelemetrySrc {
+  CPU = 0;
+  GPU = 1;
+  RAM = 2;
+  SENSOR = 3;
+}
+
+enum SeverityLvl {
+  CRITICAL = 0;
+  WARNING = 1;
+  INFO = 2;
+  DEBUG = 3;
+}
+
+message TelemetryMessage {
+  string app_name = 1;           // "QuantumLog"
+  float value = 2;               // 85.5 (your core metric)
+  TelemetrySrc context = 3;      // CPU, GPU, RAM
+  SeverityLvl severity = 4;      // CRITICAL, WARNING...
+  string unit = 5;               // "%", "MB"
+  uint64 timestamp_sec = 6;      // Unix epoch seconds (matches your uint64_t)
+}

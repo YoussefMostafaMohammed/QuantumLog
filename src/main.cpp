@@ -26,11 +26,11 @@ int main(void){
 
     LogMessage logMessage;
     for(float i =0.0f;i<100.0f;i+=2.24f){
-        logMessage=cpuFormater.format(std::to_string(i));
+        logMessage=cpuFormater.format(i);
         logManagerBuilder.addMessage(logMessage);
-        logMessage=gpuFormater.format(std::to_string(i+1.4f));
+        logMessage=gpuFormater.format(i+1.4f);
         logManagerBuilder.addMessage(logMessage);
-        logMessage=ramFormater.format(std::to_string(i+3.2f));
+        logMessage=ramFormater.format(i+3.2f);
         logManagerBuilder.addMessage(logMessage);
     }
 

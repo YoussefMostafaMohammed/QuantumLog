@@ -5,30 +5,33 @@
 
 class LogMessage{
 private:
+    ::Enums::TelemetrySrc context;
+    ::Enums::SeverityLvl severity;
     std::string name;
-    std::string text;
-    std::string context;
-    std::string time;
-    std::string severity;
     std::string unit;
+    uint64_t timeStamp;
+    float value;
+
 public:
     std::string getName() const;
-    void setName(std::string name);
+    void setAppName(std::string name);
 
-    std::string getText() const;
-    void setText(std::string text);
+    std::string getValue() const;
+    void setValue(float value);
 
     std::string getContext() const;
-    void setContext(std::string context);
+    void setContext(::Enums::TelemetrySrc context);
     
-    std::string getTime() const;
-    void setTime();
+    std::string getTimeStamp() const;
+    void setTimeStamp();
     
     std::string getSeverity() const;
-    void setSeverity(std::string severity);
+    void setSeverity(::Enums::SeverityLvl severity);
 
     std::string getUnit() const;
     void setUnit(std::string unit);
 
     friend std::ostream& operator<<(std::ostream& out, const LogMessage& msg);
+
+    std::string serializeToProtobuf() const;
 };
