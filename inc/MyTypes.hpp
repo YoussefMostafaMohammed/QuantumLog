@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string_view>
-
+#include <cstdint>
 namespace Enums{
 
     enum class LogSinkType : unsigned char {

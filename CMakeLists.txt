@@ -15,24 +15,51 @@ find_package(Protobuf REQUIRED)
 # MQTT C library (dependency - you must install this)
 # Find via pkg-config or manual search
 find_package(PkgConfig QUIET)
-pkg_check_modules(PAHO_MQTT_C QUIET paho-mqtt-async)
+pkg_check_modules(PC_PAHO_MQTT_C QUIET paho-mqtt-async)
 
-if(NOT PAHO_MQTT_C_FOUND)
+if(NOT PC_PAHO_MQTT_C_FOUND)
     # Manual fallback for source-installed C library
     find_library(PAHO_MQTT_C_LIB paho-mqtt3a PATHS /usr/local/lib /usr/lib REQUIRED)
     find_path(PAHO_MQTT_C_INCLUDE_DIR MQTTAsync.h PATHS /usr/local/include /usr/include REQUIRED)
     message(STATUS "MQTT C library (manual): ${PAHO_MQTT_C_LIB}")
     message(STATUS "MQTT C headers: ${PAHO_MQTT_C_INCLUDE_DIR}")
+    # Create PROPER imported target
+    add_library(PahoMqttC::PahoMqttC UNKNOWN IMPORTED)
+    set_target_properties(PahoMqttC::PahoMqttC PROPERTIES
+        IMPORTED_LOCATION "${PAHO_MQTT_C_LIB}"
+        INTERFACE_INCLUDE_DIRECTORIES "${PAHO_MQTT_C_INCLUDE_DIR}"
+    )
+    # For later use in include directories
+    set(PAHO_MQTT_C_INCLUDE_DIRS ${PAHO_MQTT_C_INCLUDE_DIR})
 else()
-    message(STATUS "MQTT C library (pkg-config): ${PAHO_MQTT_C_LIBRARIES}")
+    message(STATUS "MQTT C library (pkg-config): ${PC_PAHO_MQTT_C_LIBRARIES}")
+    # Create imported target from pkg-config
+    add_library(PahoMqttC::PahoMqttC INTERFACE IMPORTED)
+    target_include_directories(PahoMqttC::PahoMqttC INTERFACE ${PC_PAHO_MQTT_C_INCLUDE_DIRS})
+    target_link_libraries(PahoMqttC::PahoMqttC INTERFACE ${PC_PAHO_MQTT_C_LIBRARIES})
+    # For later use in include directories
+    set(PAHO_MQTT_C_INCLUDE_DIRS ${PC_PAHO_MQTT_C_INCLUDE_DIRS})
 endif()
 
 # MQTT C++ library (YOU BUILT THIS FROM SOURCE)
 # Since you built from source without cmake config, use manual paths
 find_library(PAHO_MQTT_CPP_LIB paho-mqttpp3 PATHS /usr/local/lib REQUIRED)
 find_path(PAHO_MQTT_CPP_INCLUDE_DIR mqtt/async_client.h PATHS /usr/local/include REQUIRED)
-message(STATUS "MQTT C++ library: ${PAHO_MQTT_CPP_LIB}")
-message(STATUS "MQTT C++ headers: ${PAHO_MQTT_CPP_INCLUDE_DIR}")
+
+# DEBUG OUTPUT - Verify the library file exists
+message(STATUS "MQTT C++ library path: ${PAHO_MQTT_CPP_LIB}")
+if(NOT EXISTS "${PAHO_MQTT_CPP_LIB}")
+    message(FATAL_ERROR "MQTT C++ library file does NOT exist at: ${PAHO_MQTT_CPP_LIB}")
+endif()
+
+# Create PROPER imported target for MQTT C++ library
+add_library(PahoMqttCpp::PahoMqttCpp UNKNOWN IMPORTED)
+set_target_properties(PahoMqttCpp::PahoMqttCpp PROPERTIES
+    IMPORTED_LOCATION "${PAHO_MQTT_CPP_LIB}"
+    INTERFACE_INCLUDE_DIRECTORIES "${PAHO_MQTT_CPP_INCLUDE_DIR}"
+    INTERFACE_LINK_LIBRARIES "PahoMqttC::PahoMqttC"
+)
+message(STATUS "MQTT C++ library (target created): ${PAHO_MQTT_CPP_LIB}")
 
 # JSON (system or /usr/local)
 find_package(nlohmann_json REQUIRED)
@@ -73,7 +100,7 @@ endif()
 # ============================================================
 # Compiler Setup
 # ============================================================
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
@@ -82,6 +109,7 @@ add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 # Source Files + Protobuf Generation
 # ============================================================
 file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp")
+list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/simple_publisher.cpp")
 
 get_filename_component(PROTO_FILE_ABSOLUTE "${CMAKE_CURRENT_SOURCE_DIR}/proto/telemetry.proto" ABSOLUTE)
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILE_ABSOLUTE})
@@ -91,14 +119,22 @@ list(APPEND SOURCES ${PROTO_SRCS})
 # Executable Target
 # ============================================================
 add_executable(${PROJECT_NAME} ${SOURCES})
+# Simple Publisher Test
+add_executable(SimpleMqttPublisher
+    src/simple_publisher.cpp  # Your simple file
+)
 
+target_link_libraries(SimpleMqttPublisher PRIVATE 
+    PahoMqttCpp::PahoMqttCpp
+    nlohmann_json::nlohmann_json
+)
 # ============================================================
-# Include Directories - CRITICAL: MQTT headers MUST come first
+# Include Directories - CRITICAL: Order matters for headers
 # ============================================================
 # SYSTEM PRIVATE suppresses warnings from 3rd-party headers
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
     ${PAHO_MQTT_CPP_INCLUDE_DIR}  # Modern C++ headers (v1.2+ with callback_functions)
-    ${PAHO_MQTT_C_INCLUDE_DIR}    # C library headers (MQTTAsync.h)
+    ${PAHO_MQTT_C_INCLUDE_DIRS}   # C library headers (MQTTAsync.h)
     ${CMAKE_CURRENT_BINARY_DIR}   # Generated protobuf headers
 )
 
@@ -108,16 +144,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # ============================================================
-# Link Libraries - ONE CLEAN COMMAND
+# Link Libraries - Using modern targets
 # ============================================================
 target_link_libraries(${PROJECT_NAME} PRIVATE 
     # Protobuf
     protobuf::libprotobuf
-    ${Protobuf_LIBRARIES}
     
-    # MQTT (both C++ and its C dependency)
-    ${PAHO_MQTT_CPP_LIB}
-    ${PAHO_MQTT_C_LIB}
+    # MQTT - use imported targets that handle dependencies
+    PahoMqttCpp::PahoMqttCpp
     
     # JSON
     nlohmann_json::nlohmann_json
@@ -159,7 +193,7 @@ message(STATUS "Project Name      : ${PROJECT_NAME}")
 message(STATUS "Project Version   : ${PROJECT_VERSION}")
 message(STATUS "Compiler          : ${CMAKE_CXX_COMPILER}")
 message(STATUS "MQTT C++ Lib      : ${PAHO_MQTT_CPP_LIB}")
-message(STATUS "MQTT C Headers    : ${PAHO_MQTT_C_INCLUDE_DIR}")
+message(STATUS "MQTT C Headers    : ${PAHO_MQTT_C_INCLUDE_DIRS}")
 message(STATUS "JSON              : ${nlohmann_json_VERSION}")
 message(STATUS "=====================================================")
 message(STATUS "")
