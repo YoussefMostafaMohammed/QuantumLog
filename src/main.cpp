@@ -13,9 +13,7 @@
 #include "MqttTelemetryClient.hpp"
 
 int main(void) {
-    std::cout << "=== QuantumLog MQTT + Synthetic Telemetry Test ===\n\n";
 
-    // ===== 1. YOUR ORIGINAL LOGMANAGER SETUP (UNCHANGED) =====
     std::unique_ptr<LogSinkFactory> logSinkFactory = std::make_unique<LogSinkFactory>();
     std::unique_ptr<ILogSink> consoleSinkImpl = logSinkFactory->createLogSink(::Enums::LogSinkType::CONSOLE);
     std::unique_ptr<ILogSink> fileSinkImpl = logSinkFactory->createLogSink(::Enums::LogSinkType::FILE);
@@ -30,8 +28,6 @@ int main(void) {
     
     std::unique_ptr<LogManager> logManager = logManagerBuilder.build();
 
-    // ===== 2. CREATE MQTT CLIENT (runs on library's internal thread) =====
-    // The mqtt::async_client manages its own background thread for network I/O
     std::string brokerAddress = "tcp://localhost:1883";
     std::string clientId = "QuantumLog_TelemetryClient_" + std::to_string(std::time(nullptr));
     
@@ -51,7 +47,6 @@ int main(void) {
         }
     }
 
-    // ===== 3. YOUR ORIGINAL SYNTHETIC DATA LOOP (UNCHANGED) =====
     std::cout << "✓ Starting synthetic CPU/GPU/RAM telemetry generation\n";
     std::cout << "  To test MQTT, publish messages in another terminal:\n";
     std::cout << "  mosquitto_pub -t 'sensors/telemetry/temp' -m '{\"sensor_id\":\"temp_1\",\"value\":42.5}'\n";
@@ -59,7 +54,7 @@ int main(void) {
 
     LogMessage logMessage;
     
-    while (true) {  // Infinite loop - use Ctrl+C to exit
+    while (true) { 
         for (float i = 0.0f; i < 100.0f; i += 2.24f) {
             logMessage = cpuFormater.format(i);
             logManager->addMessage(logMessage);
@@ -70,7 +65,6 @@ int main(void) {
             logMessage = ramFormater.format(i + 3.2f);
             logManager->addMessage(logMessage);
             
-            // Process BOTH synthetic AND MQTT-received messages
             logManager->routeMessages();
             
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
