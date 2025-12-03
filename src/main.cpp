@@ -13,6 +13,7 @@
 #include "LogManagerBuilder.hpp"
 #include "MqttTelemetryClient.hpp"
 
+
 int main(void) {
 
     std::unique_ptr<LogSinkFactory> logSinkFactory = std::make_unique<LogSinkFactory>();
