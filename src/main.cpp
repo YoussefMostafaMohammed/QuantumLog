@@ -4,6 +4,7 @@
 #include <thread>  
 #include "LogMessage.hpp"
 #include "LogManager.hpp"
+#include <chrono> 
 #include "FileSinkImpl.hpp"
 #include "ConsoleSinkImpl.hpp"
 #include "MyTypes.hpp"
@@ -26,7 +27,7 @@ int main(void) {
     logManagerBuilder.addSink(std::move(fileSinkImpl));
     logManagerBuilder.addSink(std::move(consoleSinkImpl));
     
-    std::unique_ptr<LogManager> logManager = logManagerBuilder.build();
+    std::shared_ptr<LogManager> logManager = logManagerBuilder.build();
 
     std::string brokerAddress = "tcp://localhost:1883";
     std::string clientId = "QuantumLog_TelemetryClient_" + std::to_string(std::time(nullptr));
@@ -53,8 +54,12 @@ int main(void) {
     std::cout << "  Press Ctrl+C to exit\n\n";
 
     LogMessage logMessage;
-    
-    while (true) { 
+
+    std::thread routingThread([&logManager]() {
+        logManager->routeMessages();
+    });
+
+    while(true){
         for (float i = 0.0f; i < 100.0f; i += 2.24f) {
             logMessage = cpuFormater.format(i);
             logManager->addMessage(logMessage);
@@ -63,13 +68,15 @@ int main(void) {
             logManager->addMessage(logMessage);
             
             logMessage = ramFormater.format(i + 3.2f);
-            logManager->addMessage(logMessage);
-            
-            logManager->routeMessages();
-            
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            logManager->addMessage(logMessage);         
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));    
         }
     }
+
+    routingThread.join();
+ 
+
 
     return 0;
 }

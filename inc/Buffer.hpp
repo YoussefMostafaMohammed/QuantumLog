@@ -10,10 +10,11 @@ public:
 
     virtual ~Buffer() = default;
     
-    Buffer(const Buffer& other) : buffer(other.buffer) {}
+    Buffer(const Buffer& other) 
+        : buffer(other.buffer) {}
 
     Buffer(Buffer&& other) noexcept 
-    : buffer(std::move(other.buffer)) {}
+        : buffer(std::move(other.buffer)) {}
     
     Buffer& operator=(const Buffer& other){
         if(&other!=this){
