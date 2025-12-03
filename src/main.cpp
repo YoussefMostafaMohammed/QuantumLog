@@ -55,28 +55,22 @@ int main(void) {
 
     LogMessage logMessage;
 
-    std::thread routingThread([&logManager]() {
-        logManager->routeMessages();
-    });
+
 
     while(true){
         for (float i = 0.0f; i < 100.0f; i += 2.24f) {
             logMessage = cpuFormater.format(i);
-            logManager->addMessage(logMessage);
+            logManager->logMessage(logMessage);
             
             logMessage = gpuFormater.format(i + 1.4f);
-            logManager->addMessage(logMessage);
+            logManager->logMessage(logMessage);
             
             logMessage = ramFormater.format(i + 3.2f);
-            logManager->addMessage(logMessage);         
+            logManager->logMessage(logMessage);         
 
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));    
         }
-    }
-
-    routingThread.join();
- 
-
+    } 
 
     return 0;
 }

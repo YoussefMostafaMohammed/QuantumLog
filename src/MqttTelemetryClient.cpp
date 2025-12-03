@@ -50,7 +50,7 @@ void MqttTelemetryClient::onMessageReceived(mqtt::const_message_ptr msg) {
             logMessage.setUnit("°C");
             logMessage.setTimeStamp();
             
-            pImpl->logManager.addMessage(logMessage);
+            pImpl->logManager.logMessage(logMessage);
         }
     } catch (const std::exception& e) {
         std::cerr << "MQTT Message Parse Error: " << e.what() << std::endl;

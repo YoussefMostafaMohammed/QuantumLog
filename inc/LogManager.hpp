@@ -9,7 +9,7 @@
 #include "ILogSink.hpp"
 #include "LogMessage.hpp"
 #include "Buffer.hpp"
-
+#include "ThreadPool.hpp"
 
 class LogManager{
     private:
@@ -17,11 +17,17 @@ class LogManager{
         Buffer<LogMessage> messages;
         std::mutex sinksMutex;    
         std::mutex messagesMutex;     
+        ThreadPool threadPool;
  
     public:
+    
+    LogManager(size_t numThreads = std::thread::hardware_concurrency());
+    
     void addSink(std::unique_ptr<ILogSink> logSink);
 
     void addMessage(LogMessage logMessage);
 
-    void routeMessages(void);
+    void routeMessagess(void);
+
+    void logMessage(const LogMessage &msg);
 };
