@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include <thread>  // Still needed for sleep()
+#include <thread>  
 #include "LogMessage.hpp"
 #include "LogManager.hpp"
 #include "FileSinkImpl.hpp"

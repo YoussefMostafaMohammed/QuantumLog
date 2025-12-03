@@ -5,15 +5,16 @@ void LogManager::addSink(std::unique_ptr<ILogSink> logSink){
 }
 
 void LogManager::addMessage(LogMessage logMessage){
-    messages.push_back(logMessage);
+    messages.push(logMessage);
 }
 
-void LogManager::routeMessages(){
-    for(auto &sink:sinks){
-        for (const auto& message : messages){
-            sink->write(message);
+void LogManager::routeMessages() {
+    while (true) {
+        auto msg = messages.pop();
+        if (!msg) break; 
+
+        for (auto &sink : sinks) {
+            sink->write(*msg);
         }
     }
 }
-
-

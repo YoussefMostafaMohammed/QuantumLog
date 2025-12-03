@@ -18,6 +18,7 @@ namespace Enums{
     };
 
     enum class TelemetrySrc : unsigned char{
+        UNKNOWN,
         CPU,
         GPU,
         RAM,
@@ -61,6 +62,17 @@ namespace Polices{
     struct SENSOR{
         static constexpr ::Enums::TelemetrySrc context=::Enums::TelemetrySrc::SENSOR;
         static constexpr ::std::string_view unit = "°C";
+        static constexpr float WARNING=70.0f;
+        static constexpr float CRITICAL=85.0f;
+        static constexpr ::Enums::SeverityLvl inferSeverity(float val) noexcept {
+            return (val >= CRITICAL)? ::Enums::SeverityLvl::CRITICAL:(val >= WARNING)?::Enums::SeverityLvl::WARNING: ::Enums::SeverityLvl::INFO;
+        }
+    };
+
+        
+    struct UNKNOWN{
+        static constexpr ::Enums::TelemetrySrc context=::Enums::TelemetrySrc::UNKNOWN;
+        static constexpr ::std::string_view unit = "NA";
         static constexpr float WARNING=70.0f;
         static constexpr float CRITICAL=85.0f;
         static constexpr ::Enums::SeverityLvl inferSeverity(float val) noexcept {
